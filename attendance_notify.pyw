@@ -103,8 +103,8 @@ if __name__ == '__main__':
                                 mime_message = EmailMessage()  # create an email message object
                                 # define headers
                                 mime_message['To'] = toEmail
-                                mime_message['Subject'] = f'[TEST]Chronic Absence Letter Sent to {stuNum} - {firstName} {lastName} for semester 1'  # subject line of the email
-                                mime_message.set_content(f'[TEST]This email is to inform you that a Chronic Absence Letter has been sent home to {stuNum} - {firstName} {lastName} for semester 1. Please follow up with building administration if more details are needed.')  # body of the email
+                                mime_message['Subject'] = f'Chronic Absence Letter Sent to {stuNum} - {firstName} {lastName} for semester 1'  # subject line of the email
+                                mime_message.set_content(f'This email is to inform you that a Chronic Absence Letter has been sent home to {stuNum} - {firstName} {lastName} for semester 1. Please follow up with building administration if more details are needed.')  # body of the email
                                 # encoded message
                                 encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
                                 create_message = {'raw': encoded_message}
@@ -159,8 +159,8 @@ if __name__ == '__main__':
                                 mime_message = EmailMessage()  # create an email message object
                                 # define headers
                                 mime_message['To'] = toEmail
-                                mime_message['Subject'] = f'[TEST]Chronic Absence Letter Sent to {stuNum} - {firstName} {lastName} for semester 2'  # subject line of the email
-                                mime_message.set_content(f'[TEST]This email is to inform you that a Chronic Absence Letter has been sent home to {stuNum} - {firstName} {lastName} for semester 2. Please follow up with building administration if more details are needed.')  # body of the email
+                                mime_message['Subject'] = f'Chronic Absence Letter Sent to {stuNum} - {firstName} {lastName} for semester 2'  # subject line of the email
+                                mime_message.set_content(f'This email is to inform you that a Chronic Absence Letter has been sent home to {stuNum} - {firstName} {lastName} for semester 2. Please follow up with building administration if more details are needed.')  # body of the email
                                 # encoded message
                                 encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
                                 create_message = {'raw': encoded_message}
