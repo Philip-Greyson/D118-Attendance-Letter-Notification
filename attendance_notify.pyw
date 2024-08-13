@@ -206,3 +206,7 @@ if __name__ == '__main__':
                     except Exception as er:
                         print(f'ERROR while processing overall student {stuNum}')
                         print(f'ERROR while processing overall student {stuNum}', file=log)
+        endTime = datetime.now()
+        endTime = endTime.strftime('%H:%M:%S')
+        print(f'INFO: Execution ended at {endTime}')
+        print(f'INFO: Execution ended at {endTime}', file=log)
