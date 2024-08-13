@@ -3,3 +3,4 @@
 ruff.toml
 attendance_notification.txt
 acme_powerschool-0.1-py3-none-any.whl
+attendance_notification_log.txt

@@ -38,7 +38,7 @@ EMAIL_GROUP_SUFFIX = '-attendance-notifications@d118.org'  # a suffix to be appe
 
 
 if __name__ == '__main__':
-    with open('attendance_notification.txt', 'w') as log:
+    with open('attendance_notification_log.txt', 'w') as log:
         startTime = datetime.now()
         startTime = startTime.strftime('%H:%M:%S')
         print(f'INFO: Execution started at {startTime}')
@@ -89,10 +89,9 @@ if __name__ == '__main__':
                         deansEmail = str(student[11])
                         socialWorkerEmail = str(student[12])
                         psychologistEmail = str(student[13])
-                        response = ps.get(f'ws/v1/student/{dcid}?extensions=u_chronicabsenteeism')
-                        # print(response.text)
-
-
+                        print(f'DBUG: Starting student {stuNum} at building {school}, 1st semester letter {semester1LetterSent} and notified {semester1Notified}, 2nd semester letter {semester2LetterSent} and notified {semester2Notified}')
+                        print(f'DBUG: Starting student {stuNum} at building {school}, 1st semester letter {semester1LetterSent} and notified {semester1Notified}, 2nd semester letter {semester2LetterSent} and notified {semester2Notified}', file=log)
+                        # start processing if we need to send emails
                         if (semester1LetterSent and not semester1Notified):  # if the letter has been sent for semester 1 but we havent sent the notification
                             toEmail = schoolAbbrev + EMAIL_GROUP_SUFFIX
                             if school == 5:
@@ -104,14 +103,14 @@ if __name__ == '__main__':
                                 mime_message = EmailMessage()  # create an email message object
                                 # define headers
                                 mime_message['To'] = toEmail
-                                mime_message['Subject'] = f'Chronic Absence Letter Sent to {stuNum} - {firstName} {lastName} for semester 1'  # subject line of the email
-                                mime_message.set_content(f'This email is to inform you that a Chronic Absence Letter has been sent home to {stuNum} - {firstName} {lastName} for semester 1. Please follow up with building administration if more details are needed.')  # body of the email
+                                mime_message['Subject'] = f'[TEST]Chronic Absence Letter Sent to {stuNum} - {firstName} {lastName} for semester 1'  # subject line of the email
+                                mime_message.set_content(f'[TEST]This email is to inform you that a Chronic Absence Letter has been sent home to {stuNum} - {firstName} {lastName} for semester 1. Please follow up with building administration if more details are needed.')  # body of the email
                                 # encoded message
                                 encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
                                 create_message = {'raw': encoded_message}
                                 send_message = (service.users().messages().send(userId="me", body=create_message).execute())
-                                print(f'Email sent, message ID: {send_message["id"]}') # print out resulting message Id
-                            
+                                print(f'DBUG: Email sent, message ID: {send_message["id"]}') # print out resulting message Id
+                                print(f'DBUG: Email sent, message ID: {send_message["id"]}', file=log)
                                 # update the notification box via API. See https://groups.io/g/PSUG/message/197045 for details on updating fields in extension tables
                                 data = {
                                     'students' : {
@@ -137,6 +136,9 @@ if __name__ == '__main__':
                                 if statusCode != 'SUCCESS':
                                     print(f'ERROR: Could not update semester 1 notified field for student {stuNum}, status {result.json().get('results').get('result')}')
                                     print(f'ERROR: Could not update semester 1 notified field for student {stuNum}, status {result.json().get('results').get('result')}', file=log)
+                                else:
+                                    print(f'INFO: Successfully marked {stuNum} as having sent the notification')
+                                    print(f'INFO: Successfully marked {stuNum} as having sent the notification', file=log)
                             except HttpError as er:   # catch Google API http errors, get the specific message and reason from them for better logging
                                 status = er.status_code
                                 details = er.error_details[0]  # error_details returns a list with a dict inside of it, just strip it to the first dict
@@ -157,14 +159,14 @@ if __name__ == '__main__':
                                 mime_message = EmailMessage()  # create an email message object
                                 # define headers
                                 mime_message['To'] = toEmail
-                                mime_message['Subject'] = f'Chronic Absence Letter Sent to {stuNum} - {firstName} {lastName} for semester 2'  # subject line of the email
-                                mime_message.set_content(f'This email is to inform you that a Chronic Absence Letter has been sent home to {stuNum} - {firstName} {lastName} for semester 2. Please follow up with building administration if more details are needed.')  # body of the email
+                                mime_message['Subject'] = f'[TEST]Chronic Absence Letter Sent to {stuNum} - {firstName} {lastName} for semester 2'  # subject line of the email
+                                mime_message.set_content(f'[TEST]This email is to inform you that a Chronic Absence Letter has been sent home to {stuNum} - {firstName} {lastName} for semester 2. Please follow up with building administration if more details are needed.')  # body of the email
                                 # encoded message
                                 encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
                                 create_message = {'raw': encoded_message}
                                 send_message = (service.users().messages().send(userId="me", body=create_message).execute())
-                                print(f'Email sent, message ID: {send_message["id"]}') # print out resulting message Id
-                            
+                                print(f'DBUG: Email sent, message ID: {send_message["id"]}') # print out resulting message Id
+                                print(f'DBUG: Email sent, message ID: {send_message["id"]}', file=log)
                                 # update the notification box via API. See https://groups.io/g/PSUG/message/197045 for details on updating fields in extension tables
                                 data = {
                                     'students' : {
@@ -190,6 +192,9 @@ if __name__ == '__main__':
                                 if statusCode != 'SUCCESS':
                                     print(f'ERROR: Could not update semester 2 notified field for student {stuNum}, status {result.json().get('results').get('result')}')
                                     print(f'ERROR: Could not update semester 2 notified field for student {stuNum}, status {result.json().get('results').get('result')}', file=log)
+                                else:
+                                    print(f'INFO: Successfully marked {stuNum} as having sent the notification')
+                                    print(f'INFO: Successfully marked {stuNum} as having sent the notification', file=log)
                             except HttpError as er:   # catch Google API http errors, get the specific message and reason from them for better logging
                                 status = er.status_code
                                 details = er.error_details[0]  # error_details returns a list with a dict inside of it, just strip it to the first dict
