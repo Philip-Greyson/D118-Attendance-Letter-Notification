@@ -11,6 +11,7 @@ import base64
 import json
 import os  # needed for environement variable reading
 from datetime import *
+from email.message import EmailMessage
 
 # importing module
 import acme_powerschool
@@ -20,7 +21,6 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from email.message import EmailMessage
 
 # setup db connection
 DB_UN = os.environ.get('POWERSCHOOL_READ_USER')  # username for read-only database user
@@ -37,7 +37,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.compose']
 EMAIL_GROUP_SUFFIX = '-attendance-notifications@d118.org'  # a suffix to be appended to the school abbreviations and will make up the group email
 
 
-def ps_update_custom_field(table: str, field: str, dcid: int, value) -> str:
+def ps_update_custom_field(table: str, field: str, dcid: int, value) -> str:  # noqa: ANN001
     """Function to do the update of a custom field in a student extension table, so that the large json does not need to be used every time an update is needed elsewhere."""
     # print(f'DBUG: table {table}, field {field}, student DCID {dcid}, value {value}')
     try:
@@ -67,8 +67,8 @@ def ps_update_custom_field(table: str, field: str, dcid: int, value) -> str:
         print(f'ERROR while trying to update custom field {field} in table {table} for student DCID {dcid}: {er}')
         return 'ERROR'
     if statusCode != 'SUCCESS':
-        print(f'ERROR: Could not update field {field}  in table {table} for student DCID {dcid}, status {result.json().get('results').get('result')}')
-        print(f'ERROR: Could not update field {field}  in table {table} for student DCID {dcid}, status {result.json().get('results').get('result')}', file=log)
+        print(f"ERROR: Could not update field {field}  in table {table} for student DCID {dcid}, status {result.json().get('results').get('result')}")
+        print(f"ERROR: Could not update field {field}  in table {table} for student DCID {dcid}, status {result.json().get('results').get('result')}", file=log)
     else:
         print(f'DBUG: Successfully updated field {field} in table {table} for student DCID {dcid} to {value}')
         print(f'DBUG: Successfully updated field {field} in table {table} for student DCID {dcid} to {value}', file=log)
@@ -99,7 +99,7 @@ if __name__ == '__main__':
                 token.write(creds.to_json())
         service = build('gmail', 'v1', credentials=creds)
 
-        ps = acme_powerschool.api('d118-powerschool.info', client_id=d118_client_id, client_secret=d118_client_secret) # create ps object via the API to do requests on
+        ps = acme_powerschool.api('d118-powerschool.info', client_id=d118_client_id, client_secret=d118_client_secret)  # create ps object via the API to do requests on
 
         # create the connecton to the PowerSchool database
         with oracledb.connect(user=DB_UN, password=DB_PW, dsn=DB_CS) as con:
@@ -151,7 +151,7 @@ if __name__ == '__main__':
                                 encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
                                 create_message = {'raw': encoded_message}
                                 send_message = (service.users().messages().send(userId="me", body=create_message).execute())
-                                print(f'DBUG: Email sent, message ID: {send_message["id"]}') # print out resulting message Id
+                                print(f'DBUG: Email sent, message ID: {send_message["id"]}')  # print out resulting message Id
                                 print(f'DBUG: Email sent, message ID: {send_message["id"]}', file=log)
                                 # update the notification box via API. See https://groups.io/g/PSUG/message/197045 for details on updating fields in extension tables
                                 ps_update_custom_field('u_chronicabsenteeism', 'chronicletter_sem1_notified', dcid, True)
@@ -179,7 +179,7 @@ if __name__ == '__main__':
                                 encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
                                 create_message = {'raw': encoded_message}
                                 send_message = (service.users().messages().send(userId="me", body=create_message).execute())
-                                print(f'DBUG: Email sent, message ID: {send_message["id"]}') # print out resulting message Id
+                                print(f'DBUG: Email sent, message ID: {send_message["id"]}')  # print out resulting message Id
                                 print(f'DBUG: Email sent, message ID: {send_message["id"]}', file=log)
                                 # update the notification box via API. See https://groups.io/g/PSUG/message/197045 for details on updating fields in extension tables
                                 ps_update_custom_field('u_chronicabsenteeism', 'chronicletter_sem2_notified', dcid, True)
@@ -209,7 +209,7 @@ if __name__ == '__main__':
                                         encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
                                         create_message = {'raw': encoded_message}
                                         send_message = (service.users().messages().send(userId="me", body=create_message).execute())
-                                        print(f'DBUG: Email sent, message ID: {send_message["id"]}') # print out resulting message Id
+                                        print(f'DBUG: Email sent, message ID: {send_message["id"]}')  # print out resulting message Id
                                         print(f'DBUG: Email sent, message ID: {send_message["id"]}', file=log)
                                     except HttpError as er:   # catch Google API http errors, get the specific message and reason from them for better logging
                                         status = er.status_code
@@ -242,7 +242,7 @@ if __name__ == '__main__':
                                         encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
                                         create_message = {'raw': encoded_message}
                                         send_message = (service.users().messages().send(userId="me", body=create_message).execute())
-                                        print(f'DBUG: Email sent, message ID: {send_message["id"]}') # print out resulting message Id
+                                        print(f'DBUG: Email sent, message ID: {send_message["id"]}')  # print out resulting message Id
                                         print(f'DBUG: Email sent, message ID: {send_message["id"]}', file=log)
                                     except HttpError as er:   # catch Google API http errors, get the specific message and reason from them for better logging
                                         status = er.status_code
@@ -258,11 +258,11 @@ if __name__ == '__main__':
                             except Exception as er:
                                 print(f'ERROR while calculating time passed since semester 2 letter sent for {stuNum}: {er}')
                                 print(f'ERROR while calculating time passed since semester 2 letter sent for {stuNum}: {er}', file=log)
-                        
+
                     except Exception as er:
                         print(f'ERROR while processing overall student {stuNum}: {er}')
                         print(f'ERROR while processing overall student {stuNum}: {er}', file=log)
-                    
+
         endTime = datetime.now()
         endTime = endTime.strftime('%H:%M:%S')
         print(f'INFO: Execution ended at {endTime}')
